@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторы</title>
+    <link rel="stylesheet" href="styles.css" type="text/css">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/dist/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.css}">
+</head>
+<body>
+    <div class="leftcol">
+    <form method="post" action="add_author">
+        <table>
+            <tr>
+                <td><label for="name">Новый автор:</label></td>
+                <td><input id="name" type="text" name="author" class="text-input"></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm"><span class="bi bi-plus"></span>Добавить</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+    </div>
+    <div class="rightcol">
+    <table class="table table-bordered table-striped table-sm table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">Автор</th>
+                <th class="text-center"><span class="bi-book bi-pencil"></span></th>
+                <th class="text-center"><span class="bi bi-trash"></span></th>
+                <th class="text-center"><span class="bi bi-book"></span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="a : ${authors}">
+                <td th:text="${a.id}"></td>
+                <td th:text="${a.name}"></td>
+                <td class="text-center">
+                    <a class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#myedit"
+                       th:attr="data-bs-link=@{/update_author}, data-bs-text=${a.name}, data-bs-id=${a.id}">
+                        <span class="bi bi-pencil"></span>Edit</a>
+                </td>
+                <td class="text-center">
+<!--                    <a th:href="@{/delete_author(id=${a.id})}" class="btn btn-outline-danger btn-sm" >delete</a><br/>-->
+                    <a class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#myconfirm"
+                       th:attr="data-bs-link=@{/delete_author(id=${a.id})}, data-bs-text=${a.name}, data-bs-id=${a.id}">
+                        <span class="bi bi-trash"></span> Delete</a>
+                </td>
+                <td class="text-center">
+                    <a th:href="@{/show_author_books(id=${a.id})}" class="btn btn-outline-info btn-sm"><span class="bi bi-book"></span> Books</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    <div class="modal fade" id="myconfirm" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticWarningLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticWarningLabel">Warning</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete <span id="author-txt" class="span-txt">author</span>?<br/>
+                    If you click delete, this action <i>cannot be undone</i>.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <a class="btn btn-danger delete-button">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myedit" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticEditLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="update_form">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticEditLabel">Edit</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input id="a_id" type="hidden" name="a_id">
+                    <label for="a_name">Name:</label>
+                    <input id="a_name" type="text" name="a_name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger edit-button">Update</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myConfirmModal = document.getElementById('myconfirm')
+        myConfirmModal.addEventListener('show.bs.modal', function (event) {
+            let button = event.relatedTarget;
+            let link = button.getAttribute('data-bs-link')
+            let tid = button.getAttribute('data-bs-id')
+            let text = button.getAttribute('data-bs-text')
+            let modalTitle = myConfirmModal.querySelector('.modal-title')
+            modalTitle.textContent = 'Deleting author: ' + text + ' (' + tid + ')'
+            // let span = myConfirmModal.querySelector('.span-txt')
+            let span = document.getElementById('author-txt')
+            span.textContent = text + ' (' + tid + ')'
+            let deleteButton = myConfirmModal.querySelector('.delete-button')
+            deleteButton.setAttribute("href", link)
+        })
+    </script>
+
+    <script>
+        let myEditDialog = document.getElementById("myedit")
+        myEditDialog.addEventListener('show.bs.modal', function (event) {
+            let button = event.relatedTarget
+            let link = button.getAttribute('data-bs-link')
+            let aid = button.getAttribute('data-bs-id')
+            let aname = button.getAttribute('data-bs-text')
+            let editTitle = myEditDialog.querySelector('.modal-title')
+            editTitle.textContent = 'Edit author (' + aid + ')'
+            let edit = document.getElementById('a_name')
+            edit.setAttribute("value", aname)
+            let hidden = document.getElementById('a_id')
+            hidden.setAttribute("value", aid)
+            let form = document.getElementById('update_form')
+            form.setAttribute("action", link)
+        })
+    </script>
+
+    <script th:src="@{webjars/jquery/3.7.1/dist/jquery.js}"></script>
+    <script th:src="@{webjars/popperjs__core/2.11.8/dist/umd/popper.js}"></script>
+    <script th:src="@{webjars/bootstrap/5.3.2/dist/js/bootstrap.bundle.js}"></script>
+</body>
+</html>

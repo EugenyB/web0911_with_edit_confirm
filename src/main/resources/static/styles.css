@@ -1,0 +1,24 @@
+table {
+    background-color: navy;
+}
+
+th {
+    background-color: azure;
+}
+
+td {
+    background-color: white;
+}
+
+.leftcol { /* Левая колонка */
+    float: left; /* Обтекание справа */
+    /*border: 1px solid #333; !* Параметры рамки вокруг *!*/
+    width: 300px; /* Ширина колонки */
+    padding: 5px; /* Поля вокруг текста */
+    margin: 10px 10px 20px 5px; /* Значения отступов */
+}
+.rightcol { /* Правая колонка */
+    margin: 10px 10px 20px 325px; /* Значения отступов */
+    padding: 5px; /* Поля вокруг текста */
+    /*border: 1px solid #333; !* Параметры рамки *!*/
+}
